@@ -1,0 +1,30 @@
+import java.util.ArrayList;
+ 
+// Name of Dynamic Document Property that contains the sorting values.
+sortByValuePropName = "SORT_BY_VALUE";
+
+// Init temp collections
+//SortedMap sortedMap = new TreeMap();
+
+SortedMap sortedMap = new TreeMap(Collections.reverseOrder());
+
+
+// Loop through documents and store the sort-by-values and document indices in the sortedMap.
+
+for ( int i = 0; i < dataContext.getDataCount(); i++ ) {
+  Properties props = dataContext.getProperties(i);
+  String sortByValue = props.getProperty("document.dynamic.userdefined." + sortByValuePropName) + "_" + i;
+  sortedMap.put(sortByValue, new Integer(i));
+}
+
+// Retrieve the sorted values.
+Collection sortedValues = sortedMap.values();
+
+// Loop through sorted results to output documents for the next process shape
+Iterator iterator = sortedValues.iterator();
+ 
+while (iterator.hasNext()) {
+  int i = ((Integer)iterator.next()).intValue();
+
+  dataContext.storeStream(dataContext.getStream(i), dataContext.getProperties(i));
+}
